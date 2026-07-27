@@ -34,12 +34,12 @@ html {
   --padding-m: 10px;
   --padding-l: 15px;
   --padding-xl: 20px;
-  --padding-xll: 30px;
+  --padding-xxl: 30px;
   --border-s: 5px;
   --border-m: 10px;
   --border-l: 15px;
   --border-xl: 20px;
-  --border-xll: 30px;
+  --border-xxl: 30px;
 }
 body {
   background-color: var(--bg-color);
@@ -70,7 +70,7 @@ section {
   display: flex;
   flex-grow: 1;
   justify-content: space-between;
-  gap: var(--padding-xll);
+  gap: var(--padding-xxl);
 }
 section .task-column {
   background-color: var(--bd-btn-color);
