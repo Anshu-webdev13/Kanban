@@ -27,7 +27,7 @@ html {
   --primary-color: rgb(255, 255, 255);
   --bd-btn-color: rgb(36, 35, 35);
   --bg-task-color: #2a2a2a;
-  --delete-color:#ff4d4d;
+  --delete-color: #ff4d4d;
   --nav-padding: 15px 30px;
   --section-padding: 15px 30px;
   --padding-s: 5px;
@@ -76,14 +76,15 @@ section .task-column {
   background-color: var(--bd-btn-color);
   flex-grow: 1;
   padding: var(--padding-m);
-  display:flex;
+  display: flex;
   flex-direction: column;
-  gap:var(--padding-m);
-  transition:all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+  gap: var(--padding-m);
+  transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+  border-radius: var(--border-m);
 }
-section .task-column.hover-over{
-  border:2px dashed var(--primary-color);
-  scale:1.02;
+section .task-column.hover-over {
+  border: 2px dashed var(--primary-color);
+  scale: 1.02;
 }
 section .task-column .heading {
   width: 100%;
@@ -93,21 +94,71 @@ section .task-column .heading {
 }
 section .task-column .task {
   background-color: var(--bg-task-color);
-  padding:var(--padding-m);
+  padding: var(--padding-m);
   border-radius: var(--border-m);
   display: flex;
   flex-direction: column;
-  gap:var(--padding-s);
+  gap: var(--padding-s);
   cursor: grab;
 }
-section .task-column button{
-  display:flex;
+section .task-column button {
+  display: flex;
   align-self: end;
-  cursor:pointer;
-  padding:var(--padding-s)var(--border-m);
-  border-radius:var(--border-s);
-  border:none;
-  outline:none;
-  background-color: var(--delete-color) ;
-  color:white;
+  cursor: pointer;
+  padding: var(--padding-s) var(--border-m);
+  border-radius: var(--border-s);
+  border: none;
+  outline: none;
+  background-color: var(--delete-color);
+  color: white;
+}
+.modal {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+.modal.active{
+  display:flex;
+}
+.modal .center {
+  background-color: var(--bd-btn-color);
+  padding: var(--padding-xxl);
+  border-radius: var(--border-m);
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding-m);
+  z-index: 10;
+}
+.modal .center input,
+.modal .center textarea,
+.modal .center select {
+  background-color: var(--bg-task-color);
+  outline: none;
+  border: none;
+  color: var(--primary-color);
+  padding: var(--padding-m);
+  border-radius: var(--border-s);
+}
+.modal .center button {
+  background-color: var(--bg-task-color);
+  outline: none;
+  border: none;
+  color: var(--primary-color);
+  padding: var(--padding-m) var(--padding-l);
+  border-radius: var(--border-m);
+  cursor: pointer;
+  width:fit-content;
+  align-self: center;
+}
+.modal .bg{
+  position:absolute;
+  height:100%;
+  width:100%;
+  background-color: rgba(61, 61, 61, 0.404);
+  backdrop-filter: blur(5px);
 }
