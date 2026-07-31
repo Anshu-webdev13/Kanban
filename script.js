@@ -1,80 +1,155 @@
-let taskData={}
+
+let taskData = {};
+
 const todo = document.querySelector("#todo");
 const progress = document.querySelector("#progress");
 const done = document.querySelector("#done");
-const tasks = document.querySelectorAll(".task");
-const togglebtn = document.querySelector("#toggle-btn");
+
+const toggleBtn = document.querySelector("#toggle-btn");
 const modal = document.querySelector(".modal");
 const modalBg = document.querySelector(".modal .bg");
 const addTaskBtn = document.querySelector("#add-new-task");
+
 const columns = [todo, progress, done];
 
 let dragElement = null;
-tasks.forEach((task) => {
-  task.addEventListener("drag", (e) => {
-    e.preventDefault();
-    dragElement = task;
-  });
-});
 
-function addDragEventonColumn(column) {
+// Create a task element
+function createTask(title, desc) {
+  const div = document.createElement("div");
+  div.classList.add("task");
+  div.setAttribute("draggable", "true");
+
+  div.innerHTML = `
+        <h2>${title}</h2>
+        <p>${desc}</p>
+        <button class="delete-btn">Delete</button>
+    `;
+
+  // Drag start
+  div.addEventListener("dragstart", () => {
+    dragElement = div;
+  });
+
+  // Delete task
+  div.querySelector(".delete-btn").addEventListener("click", () => {
+    div.remove();
+    updateCounts();
+    saveTasks();
+  });
+
+  return div;
+}
+
+// Update task counts
+function updateCounts() {
+  columns.forEach((col) => {
+    const count = col.querySelector(".right");
+    if (count) {
+      count.textContent = col.querySelectorAll(".task").length;
+    }
+  });
+}
+
+// Save tasks to localStorage
+function saveTasks() {
+  taskData = {};
+
+  columns.forEach((col) => {
+    const tasks = col.querySelectorAll(".task");
+
+    taskData[col.id] = Array.from(tasks).map((task) => ({
+      title: task.querySelector("h2").innerText,
+      desc: task.querySelector("p").innerText,
+    }));
+  });
+
+  localStorage.setItem("tasks", JSON.stringify(taskData));
+}
+
+// Load tasks from localStorage
+function loadTasks() {
+  const saved = JSON.parse(localStorage.getItem("tasks"));
+
+  if (!saved) return;
+
+  columns.forEach((col) => {
+    // Remove old tasks
+    col.querySelectorAll(".task").forEach((task) => task.remove());
+
+    if (saved[col.id]) {
+      saved[col.id].forEach((task) => {
+        col.appendChild(createTask(task.title, task.desc));
+      });
+    }
+  });
+
+  updateCounts();
+}
+
+// Drag & Drop
+columns.forEach((column) => {
+  column.addEventListener("dragover", (e) => {
+    e.preventDefault();
+  });
+
   column.addEventListener("dragenter", (e) => {
     e.preventDefault();
     column.classList.add("hover-over");
   });
-  column.addEventListener("dragleave", (e) => {
-    e.preventDefault();
+
+  column.addEventListener("dragleave", () => {
     column.classList.remove("hover-over");
   });
-  column.addEventListener("dragover", (e) => {
-    e.preventDefault();
-  });
+
   column.addEventListener("drop", (e) => {
     e.preventDefault();
-    column.appendChild(dragElement);
+
     column.classList.remove("hover-over");
-    columns.forEach(col=>{
-      const tasks = col.querySelectorAll(".task");
-      const count = col.querySelector(".right");
-      count.innerHTML=tasks.length;
-    })
+
+    if (dragElement) {
+      column.appendChild(dragElement);
+      updateCounts();
+      saveTasks();
+    }
   });
-}
-addDragEventonColumn(todo);
-addDragEventonColumn(progress);
-addDragEventonColumn(done);
-togglebtn.addEventListener("click", () => {
-  modal.classList.toggle("active");
 });
+
+// Open modal
+toggleBtn.addEventListener("click", () => {
+  modal.classList.add("active");
+});
+
+// Close modal
 modalBg.addEventListener("click", () => {
   modal.classList.remove("active");
 });
-addTaskBtn.addEventListener("click", () => {
-  const taskTitle = document.querySelector("#task-title-input").value;
-  const taskDescrib = document.querySelector("#task-desc-input").value;
-  const div = document.createElement("div");
-  div.classList.add("task");
-  div.setAttribute("draggable", "true");
-  div.innerHTML = `<h2>${taskTitle}</h2>
-                <p>${taskDescrib}</p>
-                <button>Delete</button>`;
-  todo.appendChild(div);
-  columns.forEach((col) => {
-    const tasks = col.querySelectorAll(".task");
-    const count = col.querySelector(".right");
-    count.innerHTML = tasks.length;
-    taskData[col.id]=Array.from(task).map(t=>{
-      return{
-        title: t.querySelector("h2").innerText,
-        desc :t.querySelector("p").innerText
-      }
-  });
-  localStorage.setItem("tasks", JSON.stringify(taskData));
-  count.innerTask=tasks.length;
 
-  div.addEventListener("drag", (e) => {
-    e.preventDefault();
-    dragElement = div;
-  });
+// Add new task
+addTaskBtn.addEventListener("click", () => {
+  const titleInput = document.querySelector("#task-title-input");
+  const descInput = document.querySelector("#task-desc-input");
+
+  const title = titleInput.value.trim();
+  const desc = descInput.value.trim();
+
+  if (title === "") {
+    alert("Please enter a task title.");
+    return;
+  }
+
+  const task = createTask(title, desc);
+  todo.appendChild(task);
+
+  titleInput.value = "";
+  descInput.value = "";
+
   modal.classList.remove("active");
+
+  updateCounts();
+  saveTasks();
 });
+
+// Initial setup
+updateCounts();
+loadTasks();
